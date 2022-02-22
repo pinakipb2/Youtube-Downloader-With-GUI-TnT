@@ -8,6 +8,17 @@ from tkinter.messagebox import *
 from threading import *
 
 file_size = 0
+resolution = "1080p"
+
+OPTIONS = [
+    "1080p",
+    "720p",
+    "480p",
+    "360p",
+    "240p",
+    "144p",
+    "Only Audio (mp3)"
+]
 
 q = input("")
 if q == "shutdown":
