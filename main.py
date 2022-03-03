@@ -20,14 +20,12 @@ OPTIONS = [
     "Only Audio (mp3)"
 ]
 
-q = input("")
-if q == "shutdown":
-    os.system("shutdown -s")
-# function progress to keep check of progress of function.
-def progress(stream=None, chunk=None, remaining=None):
-    file_downloaded = file_size - remaining
-    per = round((file_downloaded / file_size) * 100, 1)
-    dBtn.config(text=f"{per}% downloaded")
+def progress_function(stream=None, chunk=None, remaining=None):
+    file_downloaded = (file_size-remaining)
+    per = round((file_downloaded/file_size)*100, 1)
+    print(str(per)+'%')
+    progress['value'] = per
+    main.update_idletasks()
 
 
 # function start download to start the download of files
@@ -40,7 +38,7 @@ def startDownload():
         path_save = askdirectory()
         if path_save is None:
             return
-        ob = YouTube(URL, on_progress_callback=progress)
+        ob = YouTube(URL, on_progress_callback=progress_function)
         strm = ob.streams[0]
         x = ob.description.split("|")
         file_size = strm.filesize
@@ -67,6 +65,7 @@ def startDownload():
         urlField.delete(0, END)
         label.pack_forget()
         desc.pack_forget()
+        progress['value'] = 0
         dBtn.config(text="Start Download")
 
     except Exception as e:
@@ -82,6 +81,8 @@ def startDownloadthread():
 # main functions
 main = Tk()
 
+progress = ttk.Progressbar(main, orient = HORIZONTAL, length = 400, mode = 'determinate')
+
 main.title("My YouTube Downloader")
 main.config(bg="#3498DB")
 
@@ -96,6 +97,8 @@ headingIcon.pack(side=TOP)
 urlField = Entry(main, font=("Times New Roman", 18), justify=CENTER)
 urlField.pack(side=TOP, fill=X, padx=10, pady=15)
 
+progress.pack(padx=10, pady=15)
+
 dBtn = Button(
     main,
     text="Start Download",
@@ -107,7 +110,4 @@ dBtn = Button(
 dBtn.pack(side=TOP)
 label = Label(main, text="")
 desc = Label(main, text="")
-author = Label(main, text="@G.S.")
-author.config(font=("Courier", 44))
-author.pack(side=BOTTOM)
 main.mainloop()
