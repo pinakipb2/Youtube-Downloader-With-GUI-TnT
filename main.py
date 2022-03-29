@@ -34,44 +34,57 @@ def startDownload():
     global file_size
     try:
         URL = urlField.get()
-        dBtn.config(text="Please wait...")
-        dBtn.config(state=DISABLED)
-        path_save = askdirectory()
-        if path_save is None:
+        regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+        pat = re.compile(regex)
+         if not re.fullmatch(pat, URL):
+            showinfo("Enter valid URL", 'Enter a valid URL')
+        else:
+            dBtn.config(text="Please wait...")
+            dBtn.config(state=DISABLED)
+            path_save = askdirectory()
+            if path_save is None:
             return
-        ob = YouTube(URL, on_progress_callback=progress_function)
-        strm = ob.streams[0]
-        x = ob.description.split("|")
-        file_size = strm.filesize
-        dfile_size = file_size
-        dfile_size /= 1000000
-        dfile_size = round(dfile_size, 2)
-        label.config(text="Size: " + str(dfile_size) + " MB")
-        label.pack(side=TOP, pady=10)
-        desc.config(
-            text=ob.title
-            + "\n\n"
-            + "Label: "
-            + ob.author
-            + "\n\n"
-            + "length: "
-            + str(round(ob.length / 60, 1))
-            + " mins\n\n"
-            "Views: " + str(round(ob.views / 1000000, 2)) + "M"
-        )
-        desc.pack(side=TOP, pady=10)
-        strm.download(path_save, strm.title)
-        dBtn.config(state=NORMAL)
-        showinfo("Download Finished", "Downloaded Successfully")
-        urlField.delete(0, END)
-        label.pack_forget()
-        desc.pack_forget()
-        progress['value'] = 0
-        dBtn.config(text="Start Download")
+            ob = YouTube(URL, on_progress_callback=progress_function)
+            strm = ob.streams[0]
+            x = ob.description.split("|")
+            file_size = strm.filesize
+            dfile_size = file_size
+            dfile_size /= 1000000
+            dfile_size = round(dfile_size, 2)
+            label.config(text="Size: " + str(dfile_size) + " MB")
+            label.pack(side=TOP, pady=10)
+            desc.config(
+                text=ob.title
+                + "\n\n"
+                + "Label: "
+                + ob.author
+                + "\n\n"
+                + "length: "
+                + str(round(ob.length / 60, 1))
+                + " mins\n\n"
+                "Views: " + str(round(ob.views / 1000000, 2)) + "M"
+            )
+            desc.pack(side=TOP, pady=10)
+            strm.download(path_save, strm.title)
+            dBtn.config(state=NORMAL)
+            showinfo("Download Finished", "Downloaded Successfully")
+            urlField.delete(0, END)
+            label.pack_forget()
+            desc.pack_forget()
+            progress['value'] = 0
+            dBtn.config(text="Start Download")
 
     except Exception as e:
         print(e)
         print("Error!!")
+        showinfo("ERROR", 'OOPS! AN ERROR OCCURED')
+        dBtn.config(state=NORMAL)
+        urlField.delete(0, END)
+        label.pack_forget()
+        desc.pack_forget()
+        myCombo.current(0)
+        progress['value'] = 0
+        dBtn.config(text='Start Download')
 
 
 def startDownloadthread():
